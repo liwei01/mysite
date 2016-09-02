@@ -46,13 +46,6 @@ INSTALLED_APPS = [
     'focus',
 ]
 
-#userena 添加
-AUTHENTICATION_BACKENDS = (
-    'userena.backends.UserenaAuthenticationBackend',
-    'guardian.backends.ObjectPermissionBackend',
-    'django.contrib.auth.backends.ModelBackend',
-)
-
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -117,16 +110,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
-'''
-from django.utils.translation import ugettext_lazy as _
-LANGUAGES = (
-    ('zh-cn', _('Simplified Chinese')),
-    ('en', _('English')),
-)
-LOCALE_PATHS = (
-    os.path.join(BASE_DIR, "locale"),
-)
-'''
+
 #LANGUAGE_CODE = 'en-us'
 LANGUAGE_CODE = 'zh-cn'
 
@@ -152,7 +136,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')  #增加这一行
 #STATIC_PATH = os.path.join( os.path.dirname(__file__) , 'static' )
 
 #当用户直接访问login页面后登录成功会重定向 地址
-LOGIN_REDIRECT_URL = '/focus/'
+LOGIN_REDIRECT_URL = '/'
 
 
 #EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
@@ -165,5 +149,5 @@ DEFAULT_FROM_EMAIL = 'xxxx@xxxx'
 ANONYMOUS_USER_ID = -1
 AUTH_PROFILE_MODULE = 'accounts.CustomerProfile'
 USERENA_SIGNIN_REDIRECT_URL = '/accounts/%(username)s/'
-LOGIN_URL = '/accounts/signin/'
-LOGOUT_URL = '/accounts/signout/'
+#LOGIN_URL = '/accounts/signin/'
+#LOGOUT_URL = '/accounts/signout/'
