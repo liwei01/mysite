@@ -1,6 +1,6 @@
 #coding=utf=8
 
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from .models import Article, Comment, Poll, NewUser
 from .forms import *
 from django.contrib.auth.decorators import login_required
@@ -8,15 +8,94 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.views.decorators.cache import cache_page
-
+from django.template import RequestContext
 import markdown2, urlparse
+#分页用
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
-def index(request):
-    latest_article_list = Article.object.query_by_time()
-    #print latest_article_list
+def index(req):
+    midware = Article.object.query_by_time()
+    print midware
+    midware_review=[1,2,3]
+    limit = 20
+    page_midware=Paginator(midware,limit)
+    page_midware_review=Paginator(midware_review,limit)
+    page=req.GET.get('page')
+    table=req.GET.get('table','none')
+    try:
+        if table=='1':
+            midware=page_midware.page(page)
+        else:
+            midware=page_midware.page(1)
+    except PageNotAnInteger:
+        midware=page_midware.page(1)
+    except EmptyPage:
+        midware=page_midware.page(page_midware.num_pages)
+    try:
+        if table=='2':
+            midware_review=page_midware_review.page(page)
+        else:
+            midware_review=page_midware_review.page(1)
+    except PageNotAnInteger:
+        midware_review=page_midware_review.page(1)
+    except EmptyPage:
+        midware_review=page_midware_review.page(page_midware_review.num_pages)
+    loginform = LoginForm()
+    context = {'latest_article_list': midware, 'loginform':loginform}
+    return render_to_response('index.html',context,context_instance=RequestContext(req))
+    '''
     loginform = LoginForm()
     context = {'latest_article_list': latest_article_list, 'loginform':loginform}
-    return render(request, 'index.html', context)
+    return render_to_response('index.html',context)
+    '''
+#分页面
+# def test(request, list_id):
+#     loginform = LoginForm()
+#     Article_list = Article.object.query_by_time() # Get released blogs
+#     paginator = Paginator(Article_list, 10)
+#     try:
+#         Article_list = paginator.page(list_id)
+#     except PageNotAnInteger:
+#         Article_list = paginator.page(1)
+#     except EmptyPage:
+#         Article_list = paginator.page(paginator.num_pages)
+#     #print paginator.num_pages
+#     return render_to_response('test.html', {'article_list': Article_list, 'loginform':loginform, 'paginator': paginator})
+
+def test(request):
+    contacts = Article.object.all()
+    return render_to_response('test.html',{'object_list':contacts},context_instance=RequestContext(request))
+
+#测试分页面2
+def middleware_review(req):
+    midware = Article.object.query_by_time()
+    print midware
+    midware_review=[1,2,3]
+    limit = 100
+    page_midware=Paginator(midware,limit)
+    page_midware_review=Paginator(midware_review,limit)
+    page=req.GET.get('page')
+    table=req.GET.get('table','none')
+    try:
+        if table=='1':
+            midware=page_midware.page(page)
+        else:
+            midware=page_midware.page(1)
+    except PageNotAnInteger:
+        midware=page_midware.page(1)
+    except EmptyPage:
+        midware=page_midware.page(page_midware.num_pages)
+    try:
+        if table=='2':
+            midware_review=page_midware_review.page(page)
+        else:
+            midware_review=page_midware_review.page(1)
+    except PageNotAnInteger:
+        midware_review=page_midware_review.page(1)
+    except EmptyPage:
+        midware_review=page_midware_review.page(page_midware_review.num_pages)
+    return render_to_response('middleware-review.html',{'midware':midware,'midware_review':midware_review},context_instance=RequestContext(req))
+
 
 
 def log_in(request):
@@ -48,19 +127,13 @@ def log_out(request):
 
 
 def article(request, article_id):
-    '''
-    try:   # since visitor input a url with invalid id
-        article = Article.object.get(pk=article_id)  # pk???
-    except Article.DoesNotExist:
-        raise Http404("Article does not exist")
-    ''' # shortcut:
     article = get_object_or_404(Article, id=article_id)
     content = markdown2.markdown(article.content, extras=["code-friendly",
         "fenced-code-blocks", "header-ids", "toc", "metadata"])
     commentform = CommmentForm()
     loginform = LoginForm()
     comments = article.comment_set.all
-
+    print comments
     return render(request, 'article_page.html', {
         'article': article,
         'loginform':loginform,

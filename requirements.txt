@@ -7,3 +7,4 @@ django-xadmin
 xadmin
 markdown2==2.3.1
 django-userena==2.0.1
+django-pagination-1.0.7

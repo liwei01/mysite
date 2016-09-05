@@ -1,0 +1,7 @@
+{% load pagination_tags %}
+
+{% autopaginate object_list 10 %}
+{% for object in object_list %}
+    {{ object.title }}
+{% endfor %}
+{% paginate %}

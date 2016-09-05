@@ -13,4 +13,7 @@ urlpatterns = [
     url(r'^(?P<article_id>[0-9]+)/poll/$', views.get_poll_article, name='poll'),
     url(r'^(?P<article_id>[0-9]+)/$', views.article, name='article'),
 
+    url(r'^test/$', views.test, name='test'),
+    url(r'^test/(?P<list_id>[0-9]+)/$', views.test, name='test'),
+    url(r'^test2/$', views.middleware_review, name='test2'),
 ]
